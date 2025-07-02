@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学术助手 - Academic Assistant</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- 导航栏 -->
+        <nav class="navbar">
+            <div class="nav-brand">
+                <h1>🎓 学术助手</h1>
+                <p>Academic Assistant MVP</p>
+            </div>
+            <div class="nav-menu">
+                <button class="nav-btn active" data-tab="summary">文献摘要</button>
+                <button class="nav-btn" data-tab="qa">论文问答</button>
+                <button class="nav-btn" data-tab="format">格式检查</button>
+            </div>
+        </nav>
+
+        <!-- 功能区域 -->
+        <main class="main-content">
+            <!-- 文献摘要生成模块 -->
+            <div id="summary" class="tab-content active">
+                <div class="module-header">
+                    <h2>📄 自动化文献摘要生成</h2>
+                    <p>上传文献文档，AI将自动为您生成结构化摘要</p>
+                </div>
+                
+                <div class="upload-section">
+                    <div class="upload-area" id="summaryUpload">
+                        <div class="upload-icon">📁</div>
+                        <p>拖拽文件到此处或点击上传</p>
+                        <p class="upload-hint">支持 PDF、DOC、DOCX、TXT 格式</p>
+                        <input type="file" id="summaryFile" accept=".pdf,.doc,.docx,.txt" hidden>
+                        <button class="upload-btn" onclick="document.getElementById('summaryFile').click()">选择文件</button>
+                    </div>
+                </div>
+
+                <div class="options-panel">
+                    <div class="option-group">
+                        <label>摘要类型：</label>
+                        <select id="summaryType">
+                            <option value="brief">简要摘要（200字内）</option>
+                            <option value="detailed">详细摘要（500字内）</option>
+                            <option value="structured">结构化摘要</option>
+                        </select>
+                    </div>
+                    <div class="option-group">
+                        <label>输出语言：</label>
+                        <select id="summaryLang">
+                            <option value="zh">中文</option>
+                            <option value="en">英文</option>
+                            <option value="both">中英双语</option>
+                        </select>
+                    </div>
+                    <button class="generate-btn" onclick="generateSummary()">生成摘要</button>
+                </div>
+
+                <div class="result-section" id="summaryResult" style="display: none;">
+                    <div class="result-header">
+                        <h3>生成结果</h3>
+                        <div class="result-actions">
+                            <button class="action-btn" onclick="copySummary()">复制</button>
+                            <button class="action-btn" onclick="downloadSummary()">下载</button>
+                        </div>
+                    </div>
+                    <div class="result-content" id="summaryContent"></div>
+                </div>
+            </div>
+
+            <!-- 论文问答模块 -->
+            <div id="qa" class="tab-content">
+                <div class="module-header">
+                    <h2>❓ 论文问题解答</h2>
+                    <p>基于上传的论文内容，智能回答您的问题</p>
+                </div>
+
+                <div class="upload-section">
+                    <div class="upload-area" id="qaUpload">
+                        <div class="upload-icon">📚</div>
+                        <p>先上传论文文档</p>
+                        <input type="file" id="qaFile" accept=".pdf,.doc,.docx,.txt" hidden>
+                        <button class="upload-btn" onclick="document.getElementById('qaFile').click()">选择文件</button>
+                    </div>
+                </div>
+
+                <div class="chat-section" id="chatSection" style="display: none;">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="system-message">
+                            <div class="message-avatar">🤖</div>
+                            <div class="message-content">
+                                <p>文档已上传成功！请提出您想了解的问题，我会基于论文内容为您解答。</p>
+                                <div class="quick-questions">
+                                    <button class="quick-btn" onclick="askQuestion('这篇论文的主要研究内容是什么？')">主要研究内容</button>
+                                    <button class="quick-btn" onclick="askQuestion('论文使用了什么研究方法？')">研究方法</button>
+                                    <button class="quick-btn" onclick="askQuestion('论文的创新点在哪里？')">创新点</button>
+                                    <button class="quick-btn" onclick="askQuestion('论文的结论是什么？')">研究结论</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-input">
+                        <input type="text" id="questionInput" placeholder="请输入您的问题..." onkeypress="handleEnter(event)">
+                        <button class="send-btn" onclick="sendQuestion()">发送</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 格式检查模块 -->
+            <div id="format" class="tab-content">
+                <div class="module-header">
+                    <h2>📝 一键格式规范检查</h2>
+                    <p>自动检测并修正论文格式问题</p>
+                </div>
+
+                <div class="upload-section">
+                    <div class="upload-area" id="formatUpload">
+                        <div class="upload-icon">📋</div>
+                        <p>上传需要检查格式的文档</p>
+                        <input type="file" id="formatFile" accept=".doc,.docx" hidden>
+                        <button class="upload-btn" onclick="document.getElementById('formatFile').click()">选择文件</button>
+                    </div>
+                </div>
+
+                <div class="format-options">
+                    <div class="option-group">
+                        <label>格式规范：</label>
+                        <select id="formatStandard">
+                            <option value="gb">国标（GB/T 7714）</option>
+                            <option value="apa">APA 格式</option>
+                            <option value="mla">MLA 格式</option>
+                            <option value="ieee">IEEE 格式</option>
+                        </select>
+                    </div>
+                    <button class="check-btn" onclick="checkFormat()">开始检查</button>
+                </div>
+
+                <div class="format-result" id="formatResult" style="display: none;">
+                    <div class="result-header">
+                        <h3>检查结果</h3>
+                        <div class="result-stats">
+                            <span class="stat-item">发现问题: <span id="issueCount">0</span></span>
+                            <span class="stat-item">可自动修正: <span id="autoFixCount">0</span></span>
+                        </div>
+                    </div>
+                    
+                    <div class="issues-list" id="issuesList"></div>
+                    
+                    <div class="format-actions">
+                        <button class="action-btn primary" onclick="autoFixAll()">一键修正全部问题</button>
+                        <button class="action-btn" onclick="downloadCorrected()">下载修正版</button>
+                        <button class="action-btn" onclick="generateReport()">生成检查报告</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 加载状态 -->
+        <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+                <p id="loadingText">处理中...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
