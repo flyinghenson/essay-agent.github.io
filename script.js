@@ -1,5 +1,6 @@
 // 全局变量
 let currentFile = null;
+let test = undefined;
 let uploadedDocuments = {
     summary: null,
     qa: null,
