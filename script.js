@@ -3,6 +3,13 @@ let currentFile = null;
 let test = undefined;
 let newTest = undefined;
 let newTest2 = undefined;
+let newTest3 = undefined;
+let newTest4 = undefined;
+let newTest5 = undefined;
+let newTest6 = undefined;
+let newTest7 = undefined;
+let newTest8 = undefined;
+let newTest9 = undefined;
 let uploadedDocuments = {
     summary: null,
     qa: null,
