@@ -2,6 +2,7 @@
 let currentFile = null;
 let test = undefined;
 let newTest = undefined;
+let newTest2 = undefined;
 let uploadedDocuments = {
     summary: null,
     qa: null,
